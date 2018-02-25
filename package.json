@@ -1,0 +1,26 @@
+{
+    "name": "tinyfugue",
+    "displayName": "TinyFugue",
+    "description": "Language support for TinyFugue script files",
+    "version": "0.0.1",
+    "publisher": "huntwj",
+    "engines": {
+        "vscode": "^1.20.0"
+    },
+    "categories": [
+        "Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "tinyfugue",
+            "aliases": ["TinyFugue", "tinyfugue"],
+            "extensions": [".tf"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "tinyfugue",
+            "scopeName": "source.tinyfugue",
+            "path": "./syntaxes/tinyfugue.tmLanguage.json"
+        }]
+    }
+}
