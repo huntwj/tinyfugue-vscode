@@ -3,10 +3,10 @@
 	"name": "TinyFugue",
 	"patterns": [
 		{
-			"include": "#commands"
+			"include": "#comments"
 		},
 		{
-			"include": "#strings"
+			"include": "#commands"
 		},
 		{
 			"include": "#entities"
@@ -16,9 +16,20 @@
 		}
 	],
 	"repository": {
-		"commands": {
+		"comments": {
 			"patterns": [
 				{
+					"name": "comment.line.semicolon.tinyfugue",
+					"match": "^;.*$"
+				},
+				{
+					"name": "invalid.illegal.comment.tinyfugue",
+					"match": "^\\s+;.*$"
+				}
+			]
+		},
+		"commands": {
+			"patterns": [{
 					"include": "#built-in-commands"
 				},
 				{
@@ -26,14 +37,99 @@
 				}
 			]
 		},
-		"built-in-commands": {
+		"def-options": {
 			"patterns": [
 				{
-					"name": "keyword.control.tinyfugue",
-					"match": "\\/(def|else|endif|echo|let|set|loaded|require|return)"
+					"begin": "(-t)(')",
+					"beginCaptures": {
+						"1": {
+							"name": "meta.parameter.type.variable"
+						},
+						"2": {
+							"name": "string.regexp.def.tinyfugue"
+						}
+					},
+					"end": "((?<!\\\\)|(?<=\\\\\\\\))(')",
+					"endCaptures": {
+						"0": {
+							"name": "string.regexp.def.tinyfugue"
+						}
+					},
+					"contentName": "string.regexp.def.tinyfugue"
 				},
 				{
-					"begin": "\\/(test)",
+					"begin": "(-t)(\")",
+					"beginCaptures": {
+						"1": {
+							"name": "meta.parameter.type.variable"
+						},
+						"2": {
+							"name": "string.regexp.def.tinyfugue"
+						}
+					},
+					"end": "((?<!\\\\)|(?<=\\\\\\\\))(\")",
+					"endCaptures": {
+						"0": {
+							"name": "string.regexp.def.tinyfugue"
+						}
+					},
+					"contentName": "string.regexp.def.tinyfugue"
+				},
+				{
+					"match": "(-m)(?:(simple|glob|regexp)|([\\w]+))",
+					"captures": {
+						"1": {
+							"name": "meta.parameter.type.variable"
+						},
+						"2": {
+							"name": "constant.tinyfugue"
+						},
+						"3": {
+							"name": "invalid.illegal.tinyfugue"
+						}
+					}
+				},
+				{
+					"match": "(-p)(?:(\\d+(?=\\s))|([^ ]+))",
+					"captures": {
+						"1": {
+							"name": "meta.parameter.type.variable"
+						},
+						"2": {
+							"name": "constant.tinyfugue"
+						},
+						"3": {
+							"name": "invalid.illegal.tinyfugue"
+						}
+					}
+				}
+			]
+		},
+		"built-in-commands": {
+			"patterns": [{
+					"name": "keyword.control.tinyfugue",
+					"match": "\\/(else|endif|echo|loaded|require|return|result)\\b"
+				},
+				{
+					"begin": "\\/def\\b",
+					"beginCaptures": {
+						"0": {"name": "keyword.control.tinyfugue"}
+					},
+					"end": "\\b([_\\w]+)\\s*(=)|(?<!\\\\)$",
+					"endCaptures": {
+						"1": {
+							"name": "variable.tinyfugue"
+						}
+					},
+					"contentName": "meta.parameter.type.variable.tinyfugue",
+					"patterns": [
+						{
+							"include": "#def-options"
+						}
+					]
+				},
+				{
+					"begin": "\\/(test)\\b",
 					"beginCaptures": {
 						"0": {
 							"name": "keyword.control.tinyfugue"
@@ -41,14 +137,27 @@
 					},
 					"contentName": "meta.expression.tinyfugue",
 					"end": "(?=%;|$)",
-					"patterns": [
-						{
-							"include": "#expressions"
-						}
-					]
+					"patterns": [{
+						"include": "#expressions"
+					}]
 				},
 				{
-					"begin": "(\\/if)\\s+(\\()",
+					"begin": "(\\/(?:let|set))\\s+([_\\w]+)\\s*([= ])?",
+					"beginCaptures": {
+						"1": {
+							"name": "keyword.control.tinyfugue"
+						},
+						"2": {
+							"name": "variable.tinyfugue"
+						}
+					},
+					"end": "(?!%;|$)",
+					"patterns": [{
+						"include": "#macro-expansions"
+					}]
+				},
+				{
+					"begin": "(\\/(?:else)?if)\\s+(\\()",
 					"beginCaptures": {
 						"1": {
 							"name": "keyword.control.tinyfugue"
@@ -64,97 +173,119 @@
 						}
 					},
 					"contentName": "meta.expression.tinyfugue",
-					"patterns": [
-						{
-							"include": "#expressions"
-						}
-					]
+					"patterns": [{
+						"include": "#expressions"
+					}]
 				}
 			]
 		},
 		"macro-commands": {
 			"patterns": [{
+				"name": "support.class.builtin",
+				"match": "\\/(alias)\\b"
+			},{
 				"name": "entity.name.function",
-				"match": "\\/(\\w+)"
+				"match": "\\/(\\w+)\\b"
 			}]
 		},
 		"entities": {
-			"patterns": [
-				{
-					"name": "keyword.control.tinyfugue",
-					"match": "(\\/test)\\b"
-				}
-			]
+			"patterns": [{
+				"name": "keyword.control.tinyfugue",
+				"match": "(\\/test)\\b"
+			}]
 		},
 		"strings": {
-			"name": "string.quoted.double.tinyfugue",
-			"begin": "\"",
-			"end": "\"",
-			"patterns": [
-				{
+			"patterns": [{
+				"name": "string.quoted.double.tinyfugue",
+				"begin": "\"",
+				"end": "\"",
+				"patterns": [{
 					"name": "constant.character.escape.tinyfugue",
 					"match": "\\\\."
-				}
-			]
+				}]
+			}, {
+				"name": "string.quoted.single.tinyfugue",
+				"begin": "'",
+				"end": "'",
+				"patterns": [{
+					"name": "constant.character.escape.tinyfugue",
+					"match": "\\\\."
+				}]
+			}]
 		},
 		"numbers": {
-			"patterns": [
-				{
-					"name": "constant.numeric.tinyfugue",
-					"match": "\\d+(?:\\.(?:\\d+)?)?"
-				}
-			]
+			"patterns": [{
+				"name": "constant.numeric.tinyfugue",
+				"match": "\\d+(?:\\.(?:\\d+)?)?"
+			}]
 		},
 		"expression-operators": {
-			"patterns": [
-				{
+			"patterns": [{
 					"name": "keyword.operator.tinyfugue",
-					"match": "==|:="
+					"match": "==|:=|=~|!"
 				},
 				{
-					"name": "variable.tinyfugue",
 					"begin": "\\{",
-					"end": "\\}"
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.template-expression.begin.tinyfugue"
+						}
+					},
+					"contentName": "variable.tinyfugue",
+					"end": "\\}",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.template-expression.end.tinyfugue"
+						}
+					}
 				}
 			]
 		},
 		"built-in-functions": {
-			"patterns": [
-				{
-					"name": "meta.function.call.tinyfugue",
-					"begin": "\\b(strcat)\\(",
-					"beginCaptures": {
-						"1": {
-							"name": "support.function.tinyfugue"
-						}
-					},
-					"end": "\\)",
-					"patterns": [
-						{
-							"include": "#expressions"
-						}
-					]
-				}
-			]
+			"patterns": [{
+				"name": "meta.function.call.tinyfugue",
+				"begin": "\\b(strcat)\\(",
+				"beginCaptures": {
+					"1": {
+						"name": "support.class.builtin"
+					}
+				},
+				"end": "\\)",
+				"patterns": [{
+					"include": "#expressions"
+				}]
+			}]
+		},
+		"user-functions": {
+			"patterns": [{
+				"name": "meta.function.call.tinyfugue",
+				"begin": "\\b(\\w+)\\(",
+				"beginCaptures": {
+					"1": {
+						"name": "support.function.tinyfugue"
+					}
+				},
+				"end": "\\)",
+				"patterns": [{
+					"include": "#expressions"
+				}]
+			}]
 		},
 		"expression-functions": {
-			"patterns": [
-				{
-					"include": "#built-in-functions"
-				}
-			]
+			"patterns": [{
+				"include": "#built-in-functions"
+			}, {
+				"include": "#user-functions"
+			}]
 		},
 		"expression-variables": {
-			"patterns": [
-				{
-					"name": "variable.name.tinyfugue",
-					"match": "\\b\\w+\\b"
-				}
-			]
+			"patterns": [{
+				"name": "variable.name.tinyfugue",
+				"match": "\\b\\w+\\b"
+			}]
 		},
 		"expressions": {
-			"patterns": [
-				{
+			"patterns": [{
 					"include": "#strings"
 				},
 				{
@@ -172,28 +303,34 @@
 			]
 		},
 		"variable-expansions": {
-			"patterns": [
-				{
-					"name": "variable.tinyfugue",
-					"match": "%(\\w)+"
+			"patterns": [{
+					"name": "invalid.deprecated",
+					"match": "(%)(\\w+)"
 				},
 				{
-					"name": "variable.tinyfugue",
+					"contentName": "variable.tinyfugue",
 					"begin": "%\\{",
-					"end": "\\}",
-					"patterns": [
-						{
-							"include": "#variable-expansions"
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.template-expression.begin.tinyfugue"
 						}
-					]
+					},
+					"end": "\\}",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.template-expression.end.tinyfugue"
+						}
+					},
+					"patterns": [{
+						"include": "#variable-expansions"
+					}]
 				}
 			]
 		},
 		"expansion-operators": {
-			"patterns": [
-				{
+			"patterns": [{
 					"name": "invalid.newline",
-					"match": "%;\\\\(?!$)"
+					"match": "(%;)?\\\\(?!$)"
 				},
 				{
 					"name": "keyword.operator.tinyfugue",
@@ -201,13 +338,38 @@
 				}
 			]
 		},
-		"macro-expansions": {
+		"expression-evaluation": {
 			"patterns": [
 				{
+					"begin": "\\$\\[",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.template-expression.begin.tinyfugue"
+						}
+					},
+					"end": "\\]",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.template-expression.end.tinyfugue"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#expressions"
+						}
+					]
+				}
+			]
+		},
+		"macro-expansions": {
+			"patterns": [{
 					"include": "#variable-expansions"
 				},
 				{
 					"include": "#expansion-operators"
+				},
+				{
+					"include": "#expression-evaluation"
 				}
 			]
 		}
