@@ -6,19 +6,9 @@
 		},
 		{
 			"include": "#commands"
-		},
-		{
-			"include": "#entities"
-		},
-		{
-			"include": "#commands"
-		},
-		{
-			"include": "#macro-expansions"
 		}
 	],
 	"repository": {
-
 		"built-in-commands": {
 			"patterns": [{
 					"name": "keyword.control.tinyfugue",
@@ -113,12 +103,41 @@
 					"include": "#built-in-commands"
 				},
 				{
-					"include": "#macro-commands"
+					"include": "#commands--macros"
 				},
 				{
-					"include": "#simple-commads"
+					"include": "#commands--simple"
 				}
 			]
+		},
+		"commands--simple": {
+			"patterns": [{
+				"begin": "(?:(?<=^)|(?<=%;))\\s*[^\\/\\s]",
+				"end": "%;|$",
+				"name": "markup.bold",
+				"patterns": [{
+					"include": "#expansions"
+				}]
+			}]
+		},
+		"strings": {
+			"patterns": [{
+				"name": "string.quoted.double.tinyfugue",
+				"begin": "\"",
+				"end": "\"",
+				"patterns": [{
+					"name": "constant.character.escape.tinyfugue",
+					"match": "\\\\."
+				}]
+			}, {
+				"name": "string.quoted.single.tinyfugue",
+				"begin": "'",
+				"end": "'",
+				"patterns": [{
+					"name": "constant.character.escape.tinyfugue",
+					"match": "\\\\."
+				}]
+			}]
 		},
 		"comments": {
 			"patterns": [{
@@ -198,28 +217,12 @@
 				}
 			]
 		},
-		"entities": {
+		"expansions": {
 			"patterns": [{
-				"name": "keyword.control.tinyfugue",
-				"match": "(\\/test)\\b"
+				"include": "#expansions--expression-evaluation"
 			}]
 		},
-		"expansion-operators": {
-			"patterns": [{
-					"name": "invalid.newline",
-					"match": "(%;)?\\\\(?!$)"
-				},
-				{
-					"name": "invalid.newline",
-					"match": "%;$"
-				},
-				{
-					"name": "keyword.operator.tinyfugue",
-					"match": "%;\\\\$"
-				}
-			]
-		},
-		"expression-evaluation": {
+		"expansions--expression-evaluation": {
 			"patterns": [{
 				"begin": "\\$\\[",
 				"beginCaptures": {
@@ -238,14 +241,72 @@
 				}]
 			}]
 		},
-		"expression-functions": {
+		"expansions--operators": {
+			"patterns": [{
+					"name": "invalid.newline",
+					"match": "(%;)?\\\\(?!$)"
+				},
+				{
+					"name": "invalid.newline",
+					"match": "%;$"
+				},
+				{
+					"name": "keyword.operator.tinyfugue",
+					"match": "%;\\\\$"
+				}
+			]
+		},
+		"expansions--variables": {
+			"patterns": [{
+					"name": "invalid.deprecated",
+					"match": "(%)(\\w+)"
+				},
+				{
+					"contentName": "variable.tinyfugue",
+					"begin": "%\\{",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.template-expression.begin.tinyfugue"
+						}
+					},
+					"end": "\\}",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.template-expression.end.tinyfugue"
+						}
+					},
+					"patterns": [{
+						"include": "#expansions--variables"
+					}]
+				}
+			]
+		},
+		"expressions": {
+			"patterns": [{
+					"include": "#strings"
+				},
+				{
+					"include": "#numbers"
+				},
+				{
+					"include": "#expressions--functions"
+				},
+				{
+					"include": "#expressions--variables"
+				},
+				{
+					"include": "#expressions--operators"
+				}
+			]
+		},
+		"expressions--functions": {
 			"patterns": [{
 				"include": "#built-in-functions"
 			}, {
 				"include": "#user-functions"
 			}]
 		},
-		"expression-operators": {
+		"expressions--operators": {
 			"patterns": [{
 					"name": "keyword.operator.tinyfugue",
 					"match": "==|:=|=~|!"
@@ -267,31 +328,13 @@
 				}
 			]
 		},
-		"expression-variables": {
+		"expressions--variables": {
 			"patterns": [{
 				"name": "variable.name.tinyfugue",
 				"match": "\\b\\w+\\b"
 			}]
 		},
-		"expressions": {
-			"patterns": [{
-					"include": "#strings"
-				},
-				{
-					"include": "#numbers"
-				},
-				{
-					"include": "#expression-functions"
-				},
-				{
-					"include": "#expression-variables"
-				},
-				{
-					"include": "#expression-operators"
-				}
-			]
-		},
-		"macro-commands": {
+		"commands--macros": {
 			"patterns": [{
 				"name": "support.class.builtin",
 				"match": "(?:(?<=^)|(?<= ))\\/(alias|car)\\b"
@@ -302,13 +345,13 @@
 		},
 		"macro-expansions": {
 			"patterns": [{
-					"include": "#variable-expansions"
+					"include": "#expansions--variables"
 				},
 				{
-					"include": "#expansion-operators"
+					"include": "#expansions--operators"
 				},
 				{
-					"include": "#expression-evaluation"
+					"include": "#expansions--expression-evaluation"
 				}
 			]
 		},
@@ -316,25 +359,6 @@
 			"patterns": [{
 				"name": "constant.numeric.tinyfugue",
 				"match": "\\d+(?:\\.(?:\\d+)?)?"
-			}]
-		},
-		"strings": {
-			"patterns": [{
-				"name": "string.quoted.double.tinyfugue",
-				"begin": "\"",
-				"end": "\"",
-				"patterns": [{
-					"name": "constant.character.escape.tinyfugue",
-					"match": "\\\\."
-				}]
-			}, {
-				"name": "string.quoted.single.tinyfugue",
-				"begin": "'",
-				"end": "'",
-				"patterns": [{
-					"name": "constant.character.escape.tinyfugue",
-					"match": "\\\\."
-				}]
 			}]
 		},
 		"user-functions": {
@@ -351,31 +375,6 @@
 					"include": "#expressions"
 				}]
 			}]
-		},
-		"variable-expansions": {
-			"patterns": [{
-					"name": "invalid.deprecated",
-					"match": "(%)(\\w+)"
-				},
-				{
-					"contentName": "variable.tinyfugue",
-					"begin": "%\\{",
-					"beginCaptures": {
-						"0": {
-							"name": "punctuation.definition.template-expression.begin.tinyfugue"
-						}
-					},
-					"end": "\\}",
-					"endCaptures": {
-						"0": {
-							"name": "punctuation.definition.template-expression.end.tinyfugue"
-						}
-					},
-					"patterns": [{
-						"include": "#variable-expansions"
-					}]
-				}
-			]
 		}
 	},
 	"scopeName": "source.tinyfugue"
