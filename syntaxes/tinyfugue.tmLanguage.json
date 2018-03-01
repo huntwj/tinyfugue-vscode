@@ -6,6 +6,9 @@
 		},
 		{
 			"include": "#commands"
+		},
+		{
+			"include": "#expansions"
 		}
 	],
 	"repository": {
@@ -53,11 +56,14 @@
 						},
 						"2": {
 							"name": "variable.tinyfugue"
+						},
+						"3": {
+							"name": "keyword.control.tinyfugue"
 						}
 					},
-					"end": "(?!%;|$)",
+					"end": "(?=%;)|(?=$)",
 					"patterns": [{
-						"include": "#macro-expansions"
+						"include": "#expansions"
 					}]
 				},
 				{
@@ -110,11 +116,20 @@
 				}
 			]
 		},
+		"commands--macros": {
+			"patterns": [{
+				"name": "support.class.builtin",
+				"match": "(?:(?<=^)|(?<= ))\\/(alias|car)\\b"
+			}, {
+				"name": "entity.name.function",
+				"match": "(?:(?<=^)|(?<= ))\\/(\\w+)\\b"
+			}]
+		},
 		"commands--simple": {
 			"patterns": [{
-				"begin": "(?:(?<=^)|(?<=%;))\\s*[^\\/\\s]",
+				"begin": "(?:(?<=^)|(?<=%;))\\s*[^\\/\\s\\\\]",
 				"end": "%;|$",
-				"name": "markup.bold",
+				"name": "markup.inserted",
 				"patterns": [{
 					"include": "#expansions"
 				}]
@@ -220,6 +235,10 @@
 		"expansions": {
 			"patterns": [{
 				"include": "#expansions--expression-evaluation"
+			},{
+				"include": "#expansions--operators"
+			},{
+				"include": "#expansions--variables"
 			}]
 		},
 		"expansions--expression-evaluation": {
@@ -333,27 +352,6 @@
 				"name": "variable.name.tinyfugue",
 				"match": "\\b\\w+\\b"
 			}]
-		},
-		"commands--macros": {
-			"patterns": [{
-				"name": "support.class.builtin",
-				"match": "(?:(?<=^)|(?<= ))\\/(alias|car)\\b"
-			}, {
-				"name": "entity.name.function",
-				"match": "(?:(?<=^)|(?<= ))\\/(\\w+)\\b"
-			}]
-		},
-		"macro-expansions": {
-			"patterns": [{
-					"include": "#expansions--variables"
-				},
-				{
-					"include": "#expansions--operators"
-				},
-				{
-					"include": "#expansions--expression-evaluation"
-				}
-			]
 		},
 		"numbers": {
 			"patterns": [{
