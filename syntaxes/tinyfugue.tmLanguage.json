@@ -15,7 +15,7 @@
 		"built-in-commands": {
 			"patterns": [{
 					"name": "keyword.control.tinyfugue",
-					"match": "\\/(!)?([#@])?(dokey|echo|else|endif|loaded|log|quote|require|result|return|undef)\\b"
+					"match": "\\/(!)?([#@])?(dokey|done|echo|else|endif|loaded|log|quote|require|send|undef)\\b"
 				},
 				{
 					"begin": "(?:(?<=^)|(?<= ))\\/(!)?([#@])?def\\b",
@@ -36,7 +36,7 @@
 					}]
 				},
 				{
-					"begin": "(?:(?<=^)|(?<= ))\\/(!)?([#@])?test\\b",
+					"begin": "(?:(?<=^)|(?<= ))\\/(!)?([#@])?(?:test|return|result)\\b",
 					"beginCaptures": {
 						"0": {
 							"name": "keyword.control.tinyfugue"
@@ -67,7 +67,7 @@
 					}]
 				},
 				{
-					"begin": "(?:(?<=^)|(?<= ))(\\/(?:else)?if)\\s+(\\()",
+					"begin": "(?:(?<=^)|(?<= ))(\\/(?:(?:else)?if|while))\\s+(\\()",
 					"beginCaptures": {
 						"1": {
 							"name": "keyword.control.tinyfugue"
@@ -92,7 +92,7 @@
 		"built-in-functions": {
 			"patterns": [{
 				"name": "meta.function.call.tinyfugue",
-				"begin": "\\b(getopts|ismacro|replace|strcat|strstr|substr)\\(",
+				"begin": "\\b(getopts|ismacro|regmatch|replace|strcat|strlen|strstr|substr)\\(",
 				"beginCaptures": {
 					"1": {
 						"name": "support.class.builtin"
@@ -119,7 +119,7 @@
 		"commands--macros": {
 			"patterns": [{
 				"name": "support.class.builtin",
-				"match": "(?:(?<=^)|(?<= ))\\/(alias|car)\\b"
+				"match": "(?:(?<=^)|(?<= )|(?<=x))\\/(alias|car|cdr|length)\\b"
 			}, {
 				"name": "entity.name.function",
 				"match": "(?:(?<=^)|(?<= ))\\/(\\w+)\\b"
@@ -328,7 +328,7 @@
 		"expressions--operators": {
 			"patterns": [{
 					"name": "keyword.operator.tinyfugue",
-					"match": "==|:=|=~|!"
+					"match": "==|:=|=~|!~|!|&|\\|"
 				},
 				{
 					"begin": "\\{",
