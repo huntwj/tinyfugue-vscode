@@ -278,7 +278,7 @@
 		"expansions--variables": {
 			"patterns": [{
 					"name": "invalid.deprecated",
-					"match": "(%)(\\w+)"
+					"match": "(%)(#|\\*|\\w+)"
 				},
 				{
 					"contentName": "variable.tinyfugue",
