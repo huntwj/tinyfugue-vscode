@@ -15,10 +15,10 @@
 		"built-in-commands": {
 			"patterns": [{
 					"name": "keyword.control.tinyfugue",
-					"match": "\\/(!)?([#@])?(dokey|done|echo|else|endif|loaded|log|quote|require|send|undef)\\b"
+					"match": "\\/(!)?([#@])?(beep|dokey|done|echo|else|endif|limit|list|listvar|load|loaded|log|quote|repeat|require|send|shift|undef|unlimit|unset)\\b"
 				},
 				{
-					"begin": "(?:(?<=^)|(?<= ))\\/(!)?([#@])?def\\b",
+					"begin": "(?:(?<=^)|(?<=\\s)|(?<=\\$\\())\\/(!)?([#@])?def\\b",
 					"beginCaptures": {
 						"0": {
 							"name": "keyword.control.tinyfugue"
@@ -36,7 +36,7 @@
 					}]
 				},
 				{
-					"begin": "(?:(?<=^)|(?<= ))\\/(!)?([#@])?(?:test|return|result)\\b",
+					"begin": "(?:(?<=^)|(?<=%[;|])|(?<=\\s)|(?<=\\$\\())\\/(!)?([#@])?(?:test|return|result)\\b",
 					"beginCaptures": {
 						"0": {
 							"name": "keyword.control.tinyfugue"
@@ -49,7 +49,7 @@
 					}]
 				},
 				{
-					"begin": "(?:(?<=^)|(?<= ))(\\/(?:let|set))\\s+([_\\w]+)\\s*([= ])?",
+					"begin": "(?:(?<=^)|(?<=\\s)|(?<=\\$\\())(\\/(?:let|set))\\s+([_\\w]+)\\s*([= ])?",
 					"beginCaptures": {
 						"1": {
 							"name": "keyword.control.tinyfugue"
@@ -67,7 +67,7 @@
 					}]
 				},
 				{
-					"begin": "(?:(?<=^)|(?<= ))(\\/(?:(?:else)?if|while))\\s+(\\()",
+					"begin": "(?:(?<=^)|(?<=\\s)|(?<=\\$\\())(\\/(?:(?:else)?if|while))\\s+(\\()",
 					"beginCaptures": {
 						"1": {
 							"name": "keyword.control.tinyfugue"
@@ -92,7 +92,7 @@
 		"built-in-functions": {
 			"patterns": [{
 				"name": "meta.function.call.tinyfugue",
-				"begin": "\\b(getopts|ismacro|regmatch|replace|strcat|strlen|strstr|substr)\\(",
+				"begin": "\\b(getopts|ismacro|limit|regmatch|replace|strcat|strlen|strstr|substr|textdecode|textencode|tfclose|tfopen)\\(",
 				"beginCaptures": {
 					"1": {
 						"name": "support.class.builtin"
@@ -119,10 +119,10 @@
 		"commands--macros": {
 			"patterns": [{
 				"name": "support.class.builtin",
-				"match": "(?:(?<=^)|(?<= )|(?<=x))\\/(alias|car|cdr|length)\\b"
+				"match": "(?:(?<=^)|(?<=\\s)|(?<=)|(?<=\\$\\())\\/(alias|car|cdr|length|mapcar|remove|reverse|writeFile)\\b"
 			}, {
 				"name": "entity.name.function",
-				"match": "(?:(?<=^)|(?<= ))\\/(\\w+)\\b"
+				"match": "(?:(?<=^)|(?<=\\s))\\/(\\w+)\\b"
 			}]
 		},
 		"commands--simple": {
@@ -236,6 +236,8 @@
 			"patterns": [{
 				"include": "#expansions--expression-evaluation"
 			},{
+				"include": "#expansions--command-substitution"
+			},{
 				"include": "#expansions--operators"
 			},{
 				"include": "#expansions--variables"
@@ -243,7 +245,7 @@
 		},
 		"expansions--expression-evaluation": {
 			"patterns": [{
-				"begin": "\\$\\[",
+				"begin": "\\$+\\[",
 				"beginCaptures": {
 					"0": {
 						"name": "punctuation.definition.template-expression.begin.tinyfugue"
@@ -260,10 +262,31 @@
 				}]
 			}]
 		},
+		"expansions--command-substitution": {
+			"patterns": [{
+				"begin": "\\$+\\(",
+				"beginCaptures": {
+					"0": {
+						"name": "punctuation.definition.template-expression.begin.tinyfugue"
+					}
+				},
+				"end": "\\)",
+				"endCaptures": {
+					"0": {
+						"name": "punctuation.definition.template-expression.end.tinyfugue"
+					}
+				},
+				"patterns": [{
+					"include": "#expansions"
+				},{
+					"include": "#commands"
+				}]
+			}]
+		},
 		"expansions--operators": {
 			"patterns": [{
 					"name": "invalid.newline",
-					"match": "(%;)?\\\\(?!$)"
+					"match": "(%+;)?\\\\(?!$)"
 				},
 				{
 					"name": "invalid.newline",
@@ -278,11 +301,11 @@
 		"expansions--variables": {
 			"patterns": [{
 					"name": "invalid.deprecated",
-					"match": "(%)(#|\\*|\\w+)"
+					"match": "(%+)(#|\\*|\\w+)"
 				},
 				{
 					"contentName": "variable.tinyfugue",
-					"begin": "%\\{",
+					"begin": "%+\\{",
 					"beginCaptures": {
 						"0": {
 							"name": "punctuation.definition.template-expression.begin.tinyfugue"
